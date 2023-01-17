@@ -1,5 +1,3 @@
-//This is a test comment
-
 const express = require('express');
 const dotenv = require('dotenv');
 
