@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan'); //a logger npm package;
 const colors = require('colors');
+const errorHandler = require('./middleware/error');
 const connectDB = require('./config/db');
 
 // Load env vars from config file
@@ -25,6 +26,9 @@ if (process.env.NODE_ENV === 'development') {
 
 // Mount routers
 app.use('/api/v1/bootcamps', bootcamps);
+
+// Needs to be after we mount the routers as middleware code is executed linearly
+app.use(errorHandler);
 
 // That's how we access env variables with dotenv (after we have loaded them as per above)
 const PORT = process.env.PORT || 5000;
