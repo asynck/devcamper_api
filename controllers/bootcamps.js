@@ -9,8 +9,17 @@ const geocoder = require('../utils/geocoder');
 // @route   GET to /api/v1/bootcamps
 // @access  Public
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
-  // returns a promise - like every mongoose method
-  const bootcamps = await Bootcamp.find();
+  // req.query looks at the filter parameters that are coming in the url - we are using stringify to be able to manipulate it
+  let queryStr = JSON.stringify(req.query);
+
+  // greater | greater or equal | less than etc | in looks in a list/array - all these are part of mongo
+  queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (result) => {
+    return `$${result}`;
+  });
+  // make it a JSON again
+  query = Bootcamp.find(JSON.parse(queryStr));
+
+  const bootcamps = await query;
   res.status(200).json({
     success: true,
     count: bootcamps.length,
@@ -23,6 +32,7 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
 // @route   GET to /api/v1/bootcamps/:id
 // @access  Public
 exports.getBootcamp = asyncHandler(async (req, res, next) => {
+  // returns a promise - like every mongoose method
   const bootcamp = await Bootcamp.findById(req.params.id);
 
   if (!bootcamp) {
